@@ -2,7 +2,7 @@
 from pathlib import Path
 import requests
 
-OUT_DIR = Path(__file__).parent / "data" / "images"
+OUT_DIR = Path(__file__).parent / "static" / "gallery"
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 TARGET_COUNT = 25

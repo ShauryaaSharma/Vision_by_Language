@@ -53,7 +53,7 @@ def main() -> None:
     sub = parser.add_subparsers(dest="cmd", required=True)
 
     build_parser = sub.add_parser("build-index", help="Caption + embed the image gallery")
-    build_parser.add_argument("--images-dir", default="data/images")
+    build_parser.add_argument("--images-dir", default="static/gallery")
     build_parser.add_argument("--out", default="cache/index.pkl")
 
     query_parser = sub.add_parser("query", help="Run a reference image + text edit against the gallery")

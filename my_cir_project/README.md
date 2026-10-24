@@ -33,7 +33,7 @@ used exactly as pretrained.
 
 ```sh
 pip install -r requirements.txt
-python download_images.py   # fetches ~24 sample photos into data/images/
+python download_images.py   # fetches ~24 sample photos into static/gallery/
 ```
 
 ## Usage
@@ -47,7 +47,7 @@ python main.py build-index
 Query with a reference image + an edit instruction:
 
 ```sh
-python main.py query --ref-image data/images/img_1.jpg --instruction "make it black and white" --topk 5
+python main.py query --ref-image static/gallery/img_1.jpg --instruction "make it black and white" --topk 5
 ```
 
 This prints the BLIP caption, the LLM-rewritten target description, and the
@@ -77,4 +77,4 @@ images with scores. Requires `cache/index.pkl` to already exist
 
 - shortcut: gallery is only ~24 images, so retrieval quality is not
   meaningful as a benchmark result — swap in more images under
-  `data/images/` and rerun `build-index` to scale it up.
+  `static/gallery/` and rerun `build-index` to scale it up.

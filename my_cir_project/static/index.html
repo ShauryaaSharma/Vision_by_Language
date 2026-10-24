@@ -1,224 +1,119 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PixelPhrase</title>
-<style>
-  :root {
-    --bg: #f4f5f7;
-    --panel: #ffffff;
-    --panel-border: #e2e4e9;
-    --accent: #2563eb;
-    --accent-hover: #1d4ed8;
-    --text: #1a1d29;
-    --muted: #6b7280;
-    --error: #dc2626;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    min-height: 100vh;
-    font-family: -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    padding: 32px 16px 64px;
-  }
-  .wrap { max-width: 980px; margin: 0 auto; }
-  header { text-align: center; margin-bottom: 36px; }
-  header h1 {
-    font-size: 2.4rem;
-    margin: 0;
-    color: var(--accent);
-    letter-spacing: 1px;
-  }
-  header p { color: var(--muted); margin: 8px 0 0; }
-
-  .card {
-    background: var(--panel);
-    border: 1px solid var(--panel-border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 28px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.06);
-  }
-
-  .drop {
-    border: 2px dashed var(--panel-border);
-    border-radius: 12px;
-    padding: 22px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color .15s, background .15s;
-    position: relative;
-  }
-  .drop.drag { border-color: var(--accent); background: #eff4ff; }
-  .drop input[type=file] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
-  .drop img { max-height: 160px; border-radius: 8px; margin-top: 10px; }
-  .drop .hint { color: var(--muted); font-size: .9rem; }
-
-  label.field-label { display: block; margin: 18px 0 6px; color: var(--muted); font-size: .85rem; text-transform: uppercase; letter-spacing: .5px; }
-  input[type=text] {
-    width: 100%;
-    padding: 12px 14px;
-    border-radius: 10px;
-    border: 1px solid var(--panel-border);
-    background: #fff;
-    color: var(--text);
-    font-size: 1rem;
-  }
-  input[type=text]:focus { outline: none; border-color: var(--accent); }
-
-  button#go {
-    margin-top: 20px;
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    font-size: 1.05rem;
-    font-weight: 600;
-    color: #fff;
-    background: var(--accent);
-    cursor: pointer;
-    transition: background .15s;
-  }
-  button#go:hover { background: var(--accent-hover); }
-  button#go:disabled { opacity: .55; cursor: not-allowed; }
-
-  .captions { margin-top: 18px; font-size: .95rem; }
-  .captions div { margin: 4px 0; }
-  .captions .label { color: var(--muted); }
-
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 16px;
-  }
-  .tile {
-    background: #fff;
-    border: 1px solid var(--panel-border);
-    border-radius: 12px;
-    overflow: hidden;
-  }
-  .tile img { width: 100%; height: 120px; object-fit: cover; display: block; }
-  .tile .meta { padding: 8px 10px; font-size: .78rem; color: var(--muted); }
-  .tile .score { color: var(--accent); font-weight: 600; }
-
-  h2 { font-size: 1.1rem; margin: 0 0 16px; color: var(--text); }
-  .status { text-align: center; color: var(--muted); padding: 20px; }
-  .error { color: var(--error); }
-</style>
+<title>PixelPhrase — text-guided image retrieval</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="wrap">
-  <header>
-    <h1>PixelPhrase</h1>
-    <p>Caption it. Rewrite it. Find it. &mdash; training-free text-guided image retrieval</p>
-  </header>
 
-  <div class="card">
-    <label class="drop" id="drop">
-      <input type="file" id="file" accept="image/*">
-      <div id="dropContent">
-        <div>Drop a reference image here, or click to choose one</div>
-        <div class="hint">JPG / PNG</div>
+<header class="site-header">
+  <div class="wrap">
+    <div class="brand">
+      <h1><span class="brand-mark" aria-hidden="true"></span>PixelPhrase</h1>
+      <p>Caption it. Rewrite it. Find it.</p>
+    </div>
+    <a class="header-link" href="#gallery">Browse gallery ↓</a>
+  </div>
+</header>
+
+<main class="wrap">
+  <div class="main-grid">
+
+    <!-- 2. Upload panel -->
+    <form class="panel query-panel" id="query-form" novalidate>
+      <h2 class="panel-title">Query</h2>
+
+      <div class="dropzone" id="dropzone">
+        <input type="file" id="file-input" name="image" accept="image/*" aria-label="Upload reference image">
+        <div class="dz-empty">
+          <div class="dz-icon" aria-hidden="true">+</div>
+          <div class="dz-title">Drop a photo or <span>browse</span></div>
+          <div class="dz-hint">JPG, PNG or WebP · up to 10 MB</div>
+        </div>
+        <div class="dz-preview">
+          <img id="dz-img" alt="Selected reference image">
+          <div class="dz-meta">
+            <span class="dz-name" id="dz-name"></span>
+            <button type="button" class="dz-clear" id="dz-clear">Remove</button>
+          </div>
+        </div>
       </div>
-    </label>
 
-    <label class="field-label" for="instruction">Edit instruction</label>
-    <input type="text" id="instruction" placeholder="e.g. make it black and white">
+      <div class="field">
+        <label for="instruction">Edit instruction</label>
+        <input class="input" type="text" id="instruction" name="instruction" placeholder="e.g. make it black and white" autocomplete="off" maxlength="120">
+        <div class="chips" id="chips">
+          <button type="button" class="chip">make it black and white</button>
+          <button type="button" class="chip">add snow</button>
+          <button type="button" class="chip">at night</button>
+        </div>
+      </div>
 
-    <button id="go">Find matching images</button>
+      <button type="submit" class="btn btn-block" id="submit-btn" disabled>
+        <span class="spinner" aria-hidden="true"></span>
+        <span class="btn-text">Find matches</span>
+        <span class="btn-elapsed" id="elapsed">0.0s</span>
+      </button>
+      <p class="form-note" id="form-note" aria-live="polite">Add a photo and an instruction to search.</p>
+    </form>
 
-    <div id="captions" class="captions"></div>
+    <div class="output">
+      <!-- 3. Caption readout -->
+      <section class="panel" aria-labelledby="cap-title">
+        <h2 class="panel-title" id="cap-title">Captions</h2>
+        <div class="captions">
+          <div class="cap-row base">
+            <span class="cap-label"><span class="dot"></span>Base caption</span>
+            <p class="cap-text is-empty" id="cap-base">—</p>
+          </div>
+          <div class="cap-divider"></div>
+          <div class="cap-row target">
+            <span class="cap-label"><span class="dot"></span>Rewritten target</span>
+            <p class="cap-text is-empty" id="cap-target">—</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. Results -->
+      <section aria-labelledby="results-title" aria-live="polite">
+        <div class="section-head">
+          <h2 id="results-title">Top matches</h2>
+          <span class="section-meta" id="results-meta"></span>
+        </div>
+
+        <div class="state" id="state-empty">
+          <div class="state-icon" aria-hidden="true">↑</div>
+          <h3>No results yet</h3>
+          <p>Run a query above to see results.</p>
+        </div>
+
+        <div class="state error" id="state-error" hidden>
+          <div class="state-icon" aria-hidden="true">!</div>
+          <h3>Something went wrong</h3>
+          <p id="error-msg">The server didn’t respond. Check your connection and try again.</p>
+          <button type="button" class="btn btn-ghost" id="retry-btn">Try again</button>
+        </div>
+
+        <div class="grid" id="results-grid" hidden></div>
+      </section>
+    </div>
   </div>
 
-  <div class="card">
-    <h2>Top matches</h2>
-    <div id="results" class="grid"><div class="status">Run a query above to see results.</div></div>
-  </div>
+  <!-- 5. Gallery -->
+  <section class="gallery-section" id="gallery" aria-labelledby="gallery-title">
+    <div class="section-head">
+      <h2 id="gallery-title">Gallery</h2>
+      <span class="section-meta" id="gallery-meta"></span>
+    </div>
+    <div class="grid" id="gallery-grid"></div>
+  </section>
+</main>
 
-  <div class="card">
-    <h2>Gallery</h2>
-    <div id="gallery" class="grid"><div class="status">Loading gallery&hellip;</div></div>
-  </div>
-</div>
-
-<script>
-const drop = document.getElementById('drop');
-const fileInput = document.getElementById('file');
-const dropContent = document.getElementById('dropContent');
-const goBtn = document.getElementById('go');
-const captionsEl = document.getElementById('captions');
-const resultsEl = document.getElementById('results');
-const galleryEl = document.getElementById('gallery');
-
-let chosenFile = null;
-
-function showPreview(file) {
-  const url = URL.createObjectURL(file);
-  dropContent.innerHTML = `<img src="${url}" alt="preview"><div class="hint">${file.name}</div>`;
-}
-
-fileInput.addEventListener('change', () => {
-  if (fileInput.files[0]) { chosenFile = fileInput.files[0]; showPreview(chosenFile); }
-});
-
-['dragenter', 'dragover'].forEach(evt =>
-  drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.add('drag'); }));
-['dragleave', 'drop'].forEach(evt =>
-  drop.addEventListener(evt, e => { e.preventDefault(); drop.classList.remove('drag'); }));
-drop.addEventListener('drop', e => {
-  const file = e.dataTransfer.files[0];
-  if (file) { chosenFile = file; fileInput.files = e.dataTransfer.files; showPreview(file); }
-});
-
-function tile(name, caption, score) {
-  const scoreHtml = score !== undefined ? `<div class="score">${score}</div>` : '';
-  return `<div class="tile">
-      <img src="/images/${name}" alt="${caption}">
-      <div class="meta">${caption}${scoreHtml}</div>
-    </div>`;
-}
-
-async function loadGallery() {
-  const res = await fetch('/api/gallery');
-  const items = await res.json();
-  galleryEl.innerHTML = items.map(i => tile(i.name, i.caption)).join('');
-}
-
-goBtn.addEventListener('click', async () => {
-  const instruction = document.getElementById('instruction').value.trim();
-  if (!chosenFile) { alert('Choose a reference image first.'); return; }
-  if (!instruction) { alert('Type an edit instruction first.'); return; }
-
-  goBtn.disabled = true;
-  goBtn.textContent = 'Thinking… (captioning + rewriting + retrieving)';
-  captionsEl.innerHTML = '';
-  resultsEl.innerHTML = '<div class="status">Running the pipeline on CPU, this can take a bit&hellip;</div>';
-
-  const form = new FormData();
-  form.append('image', chosenFile);
-  form.append('instruction', instruction);
-
-  try {
-    const res = await fetch('/api/query', { method: 'POST', body: form });
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-
-    captionsEl.innerHTML = `
-      <div><span class="label">Base caption:</span> ${data.base_caption}</div>
-      <div><span class="label">Rewritten target:</span> ${data.rewritten_caption}</div>`;
-    resultsEl.innerHTML = data.results.map(r => tile(r.name, r.caption, r.score)).join('');
-  } catch (err) {
-    resultsEl.innerHTML = `<div class="status error">${err.message}</div>`;
-  } finally {
-    goBtn.disabled = false;
-    goBtn.textContent = 'Find matching images';
-  }
-});
-
-loadGallery();
-</script>
+<script src="app.js"></script>
 </body>
 </html>
