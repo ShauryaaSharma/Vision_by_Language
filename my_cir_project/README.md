@@ -53,6 +53,17 @@ python main.py query --ref-image data/images/img_1.jpg --instruction "make it bl
 This prints the BLIP caption, the LLM-rewritten target description, and the
 top-K closest gallery images by CLIP similarity.
 
+### Web frontend ("PixelPhrase")
+
+```sh
+python app.py
+```
+
+Then open http://localhost:5000 — upload a reference image, type an edit
+instruction, and see the rewritten caption plus the top matching gallery
+images with scores. Requires `cache/index.pkl` to already exist
+(`build-index` above).
+
 ## What's intentionally simplified vs. the original paper
 
 - Tiny CPU-friendly models (BLIP-base, CLIP ViT-B/32, Qwen2.5-0.5B) instead
